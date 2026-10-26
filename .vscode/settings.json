@@ -21,5 +21,6 @@
         "${workspaceFolder}/src",
         "${workspaceFolder}/lib",
         "${workspaceFolder}/include"
-    ]
+    ],
+    "C_Cpp.errorSquiggles": "disabled"
 }
