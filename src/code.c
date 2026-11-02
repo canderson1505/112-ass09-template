@@ -96,8 +96,9 @@ void safe_free(void **ptr)
 
 int *resize_ints(int *arr, size_t old_count, size_t new_count)
 {
-    {
-        if (new_count == 0)
+
+        if (new_count == 0) {
+            free(arr);
         return NULL;
     }
    
