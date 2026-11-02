@@ -208,8 +208,6 @@ ByteBuffer *buffer_create(size_t capacity)
  */
 
 bool buffer_reserve(ByteBuffer *buf, size_t min_capacity)
-
-    bool buffer_reserve(ByteBuffer *buf, size_t min_capacity)
 {
     if (buf == NULL)
         return false;
