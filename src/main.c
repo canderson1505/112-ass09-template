@@ -12,7 +12,7 @@
 #include "code.h"
 
 
-int main(void)
+int main()
 {
         // Part 1
         int *a = alloc_zeroed_ints(3);
@@ -21,13 +21,16 @@ int main(void)
         printf("a[0]=%d a[5]=%d\n", a[0], a[5]);
         safe_free((void **)&a);
         printf("a after safe_free: %p\n", (void *)a);
+
         // Part 2
         ByteBuffer *b = buffer_create(2);
         buffer_append_string(b, "Hello");
         buffer_append_byte(b, ' ');
         buffer_append_string(b, "World");
         buffer_insert(b, 5, ",", 1);
-        printf("size=%zu capacity=%zu find('W')=%d\n", b->size, b->capacity, buffer_find(b, 'W')printf("content: %.*s\n", (int)b->size, (char *)b->data);
+        printf("size=%zu capacity=%zu find('W')=%d\n", b->size, b->capacity, buffer_find(b, 'W'));
+        printf("content: %.*s\n", (int)b->size, (char *)b->data);
+
         // Part 3
         buffer_clear(b);
         buffer_append_string(b, "one,two,,four");

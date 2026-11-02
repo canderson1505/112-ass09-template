@@ -121,6 +121,7 @@ int *resize_ints(int *arr, size_t old_count, size_t new_count)
         memset(temp + old_count, 0, 
            (new_count - old_count) * sizeof(int));
 
+            return temp;
 }
 
 /*
@@ -207,74 +208,65 @@ ByteBuffer *buffer_create(size_t capacity)
  */
 
 bool buffer_reserve(ByteBuffer *buf, size_t min_capacity)
+
+    bool buffer_reserve(ByteBuffer *buf, size_t min_capacity)
 {
-    if (buf = NULL)
+    if (buf == NULL)
         return false;
 
     if (min_capacity <= buf->capacity)
+        return true;
+
+    size_t new_capacity = buf->capacity;
+
+    while (new_capacity < min_capacity)
+    {
+        if (new_capacity > (size_t)-1 / 2) {
+            new_capacity = min_capacity;
+            break;
+        }
+
+        new_capacity *= 2;
+    }
+
+    unsigned char *temp = realloc(buf->data, new_capacity);
+
+    if (temp == NULL)
+        return false;
+
+    memset(temp + buf->capacity, 0,
+           new_capacity - buf->capacity);
+
+    buf->data = temp;
+    buf->capacity = new_capacity;
 
     return true;
-
-    size_t new_capacity = buf->capacity; 
-
-
-    while (new_capacity > min_capacity)
-    {
-        if (new_capacity > (size_t)-1 / 2)
-    {
-        new_capacity = min_capacity;
-        break;
-    }
-        new_capacity *= 2;
-    
-    unsigned char *temp = realloc(buf->data, new_capacity); 
- 
-    if (temp == NULL) 
-        
-        return false; 
- 
-    memset(temp + buf->capacity, 0, 
-       
-        new_capacity - buf->capacity); 
- 
-    buf->data = temp; 
-
-    buf->capacity = new_capacity; 
- 
-return true; 
-
 }
 
-/*
- * STEP 8: buffer_append
- *
- * Append `n` bytes from `data` after the content (memcpy).
- * Grow with buffer_reserve(buf, size + n) if needed.
- *  - buf == NULL, or data == NULL while n > 0 -> false.
- *  - n == 0 -> true, nothing changes.
- *  - On success size grows by n.
- */
+// Step 8
 
 bool buffer_append(ByteBuffer *buf, const void *data, size_t n)
 {
-     if (buf == NULL) 
-     
-        return false; 
+    if (buf == NULL)
+        return false;
 
-    if (n == 0) 
-        return true; 
- 
-    if (data == NULL || n > (size_t)-1 - buf->size) 
-        return false; 
- 
-    size_t old_size = buf->size; 
- 
-    if (!buffer_reserve(buf, old_size + n)) 
-        
-        return false; 
+    if (n == 0)
+        return true;
 
+    if (data == NULL || n > (size_t)-1 - buf->size)
+        return false;
+
+    size_t old_size = buf->size;
+
+    if (!buffer_reserve(buf, old_size + n))
+        return false;
+
+    memcpy(buf->data + old_size, data, n);
+
+    buf->size = old_size + n;
+
+    return true;
 }
-
 /*
  * STEP 9: buffer_append_byte
  *
@@ -283,7 +275,7 @@ bool buffer_append(ByteBuffer *buf, const void *data, size_t n)
 
 bool buffer_append_byte(ByteBuffer *buf, unsigned char byte)
 {
-    return buffer_append_string(buf, &byte, 1);
+    return buffer_append(buf, &byte, 1);
 }
 
 /*
@@ -429,7 +421,7 @@ bool buffer_remove(ByteBuffer *buf, size_t pos, size_t n)
 
 void buffer_clear(ByteBuffer *buf)
 {
-   if (buf = NULL) 
+   if (buf == NULL) 
     return;
    
    memset(buf->data, 0, buf->capacity);
@@ -719,6 +711,9 @@ void free_tokens(char ***tokens, size_t count)
         free((*tokens)[i]);
 
     free(*tokens);
-    
+
     *tokens = NULL;
+
+    return;
+
 }
